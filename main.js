@@ -5,6 +5,8 @@ window.addEventListener("load", function () {
     id: "visualization",
     dataObject,
     attributionTheme: "dark",
+    // Alternate layout:
+    layout: "squarified",
     // "Performance"
     rolloutDuration: 0,
     pullbackDuration: 0,
