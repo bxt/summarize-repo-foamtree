@@ -92,6 +92,7 @@ fn run(repo_path: &str) -> Result<(), git2::Error> {
                 || name.ends_with(".woff")
                 || name.ends_with(".svg")
                 || name.ends_with(".ttf")
+                || name.ends_with(".tar.gz")
                 || name.ends_with(".gql-types.tsx")
             {
                 return TreeWalkResult::Skip;
