@@ -22,6 +22,10 @@ For gathering data:
 
     cargo run -- ../path/to/repo > data.js
 
+If you do not want to run rust and gather actual repo data you can also do:
+
+    cp data.js.example data.js
+
 More info about the used libs:
 
 * https://get.carrotsearch.com/foamtree/latest/api/#groupColorDecorator
