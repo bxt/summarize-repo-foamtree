@@ -1,0 +1,9 @@
+ var dataObject = {
+      groups: [
+        { label: "Your", weight: 1.0 },
+        { label: "pitty", weight: 5.0 },
+        { label: "First", weight: 3.0 },
+        { label: "FoamTree", weight: 2.0 },
+        { label: "Visualization", weight: 4.0 },
+      ],
+    };
