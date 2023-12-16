@@ -2,7 +2,7 @@ use std::{collections::HashMap, path::Path, vec};
 
 use git2::{BlameOptions, ObjectType, Repository, TreeWalkMode, TreeWalkResult};
 
-fn run(repo_path: &str) -> Result<(), git2::Error> {
+fn run(repo_path: &str, do_blame: bool) -> Result<(), git2::Error> {
     // let path = repo_path.as_ref().map(|s| &s[..]).unwrap_or(".");
     let repo = Repository::open(repo_path)?;
     let rev_options = ["origin/main", "origin/master", "main"];
@@ -30,14 +30,17 @@ fn run(repo_path: &str) -> Result<(), git2::Error> {
     let parsed_rev = repo.revparse_single(rev).unwrap();
     let commit = parsed_rev.as_commit().unwrap();
 
-    let blame_start = repo
-        .revparse_single(&(rev.to_string() + "~1000"))
-        .expect("Blame reference commit not found")
-        .as_commit()
-        .expect("Blame reference commit not a commit?")
-        .id();
     let mut blame_options = BlameOptions::default();
-    blame_options.oldest_commit(blame_start);
+
+    if do_blame {
+        let blame_start = repo
+            .revparse_single(&(rev.to_string() + "~1000"))
+            .expect("Blame reference commit not found")
+            .as_commit()
+            .expect("Blame reference commit not a commit?")
+            .id();
+        blame_options.oldest_commit(blame_start);
+    }
 
     let tree = commit.tree()?;
 
@@ -98,26 +101,31 @@ fn run(repo_path: &str) -> Result<(), git2::Error> {
                 return TreeWalkResult::Skip;
             }
 
-            // let size = entry.to_object(&repo).unwrap().as_blob().unwrap().size();
             println!("{:ident$}{{ label: \"{name}\", groups: [", "");
             // println!("- {root}{name}");
 
-            let blame = repo.blame_file(Path::new(&(path + name)), Some(&mut blame_options)).unwrap();
+            let size = if do_blame {
+                let blame = repo.blame_file(Path::new(&(path + name)), Some(&mut blame_options)).unwrap();
 
-            let mut people = HashMap::new();
+                let mut people = HashMap::new();
 
-            for blame_hunk in blame.iter() {
-                let size = blame_hunk.lines_in_hunk();
-                let signature = blame_hunk.final_signature();
-                let author = signature.name().unwrap_or("Mr. Nobody").to_string();
-                *people.entry(author).or_insert(0) += size;
-            }
+                for blame_hunk in blame.iter() {
+                    let size = blame_hunk.lines_in_hunk();
+                    let signature = blame_hunk.final_signature();
+                    let author = signature.name().unwrap_or("Mr. Nobody").to_string();
+                    *people.entry(author).or_insert(0) += size;
+                }
 
-            let mut size = 0;
-            for (index, (author, count)) in people.iter().enumerate() {
-                size += count;
-                println!("{:ident$}    {{ label: \"{name} hunk {index}\", weight: {count}, person: \"{author}\" }},", "");
-            }
+                let mut size = 0;
+                for (index, (author, count)) in people.iter().enumerate() {
+                    size += count;
+                    println!("{:ident$}    {{ label: \"{name} hunk {index}\", weight: {count}, person: \"{author}\" }},", "");
+                }
+
+                size
+            } else {
+                entry.to_object(&repo).unwrap().as_blob().unwrap().size()
+            };
 
             println!("{:ident$}], weight: {size} }}, // end {name}", "");
             *root_weights.last_mut().unwrap() += size;
@@ -157,13 +165,22 @@ fn run(repo_path: &str) -> Result<(), git2::Error> {
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
+    let mut args: Vec<String> = std::env::args().collect();
+
+    let mut do_blame = false;
+    args.retain(|a| {
+        (a == "--blame")
+            .then(|| {
+                do_blame = true;
+            })
+            .is_none()
+    });
 
     let repo_path = if args.len() < 2 { "." } else { &args[1] };
 
     let start = std::time::Instant::now();
 
-    match run(repo_path) {
+    match run(repo_path, do_blame) {
         Ok(()) => {
             eprintln!("Done! 🎉")
         }
