@@ -1,9 +1,23 @@
- var dataObject = {
-      groups: [
-        { label: "Your", weight: 1.0 },
-        { label: "pitty", weight: 5.0 },
-        { label: "First", weight: 3.0 },
-        { label: "FoamTree", weight: 2.0 },
-        { label: "Visualization", weight: 4.0 },
-      ],
-    };
+document.title = ".";
+var dataObject = {
+  groups: [
+        { label: ".gitignore", groups: [
+        ], weight: 59 }, // end .gitignore
+        { label: "Cargo.lock", groups: [
+        ], weight: 4990 }, // end Cargo.lock
+        { label: "Cargo.toml", groups: [
+        ], weight: 208 }, // end Cargo.toml
+        { label: "README.md", groups: [
+        ], weight: 1025 }, // end README.md
+        { label: "data.js.example", groups: [
+        ], weight: 266 }, // end data.js.example
+        { label: "index.html", groups: [
+        ], weight: 463 }, // end index.html
+        { label: "main.js", groups: [
+        ], weight: 3497 }, // end main.js
+        { label: "src", groups: [
+            { label: "main.rs", groups: [
+            ], weight: 6697 }, // end main.rs
+        ], weight: 6698 }, // end Some("src/")
+  ],
+};
