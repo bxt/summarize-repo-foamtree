@@ -31,6 +31,7 @@ fn run(repo_path: &str, do_blame: bool) -> Result<(), git2::Error> {
     let commit = parsed_rev.as_commit().unwrap();
 
     let mut blame_options = BlameOptions::default();
+    let mut blame_cutoff = None;
 
     if do_blame {
         let blame_start = repo
@@ -39,6 +40,7 @@ fn run(repo_path: &str, do_blame: bool) -> Result<(), git2::Error> {
             .as_commit()
             .expect("Blame reference commit not a commit?")
             .id();
+        blame_cutoff = Some(blame_start);
         blame_options.oldest_commit(blame_start);
     }
 
@@ -111,8 +113,13 @@ fn run(repo_path: &str, do_blame: bool) -> Result<(), git2::Error> {
 
                 for blame_hunk in blame.iter() {
                     let size = blame_hunk.lines_in_hunk();
-                    let signature = blame_hunk.final_signature();
-                    let author = signature.name().unwrap_or("Mr. Nobody").to_string();
+                    let is_cutoff = blame_cutoff.is_some_and(|it| it == blame_hunk.final_commit_id());
+                    let author = if is_cutoff {
+                        "Mr. Nobody".to_string()
+                    } else {
+                        let signature = blame_hunk.final_signature();
+                        signature.name().unwrap_or("Mr. Nobody").to_string()
+                    };
                     *people.entry(author).or_insert(0) += size;
                 }
 
