@@ -107,6 +107,14 @@ fn run(repo_path: &str) -> Result<(), git2::Error> {
         }
     })?;
 
+    while roots.join("") != "" {
+        let weight = root_weights.pop().unwrap();
+        *root_weights.last_mut().unwrap() += weight;
+        let name = roots.pop();
+        let ident = roots.len() * 4 + 4;
+        println!("{:ident$}], weight: {weight} }}, // end {name:?}", "");
+    }
+
     println!("  ],");
     println!("}};");
 
