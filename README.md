@@ -18,4 +18,11 @@ For gathering data:
 
     cargo run -- ../path/to/repo > data.js
 
+More info about the used libs:
+
+* https://get.carrotsearch.com/foamtree/latest/api/#groupColorDecorator
+* https://get.carrotsearch.com/foamtree/latest/demos/settings.html
+* https://docs.rs/git2/latest/git2/
+* https://github.com/rust-lang/git2-rs/tree/master/examples
+
 Have fun!
