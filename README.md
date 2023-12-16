@@ -1,4 +1,4 @@
-# summarize-ts-repo-foamtree
+# summarize-repo-foamtree
 
 Tool to summarize what is in a git repo.
 
