@@ -4,6 +4,10 @@ Tool to summarize what is in a git repo.
 
 This uses some makeshift Rust code calling into libgit2 to get the file tree of a repository, and some information about the authors. I then puts the data into a tool called Foamtree to create a voronoi diagram from it. It's more of a proof-of-concept right now, so you have to dig into the code to get anything useful out of this.
 
+## Example
+
+<img width="100%" alt="Result of running summarize-repo-foamtree on the remix repo, some colorful poloygons" src="https://github.com/bxt/summarize-repo-foamtree/assets/639509/abe51c92-1188-4120-aae3-6e7bb0b5d40c">
+
 ## Running locally
 
 Have rust / cargo and node / npx installed. Download the `carrotsearch.foamtree.js` file from:
